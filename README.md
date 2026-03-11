@@ -27,4 +27,3 @@ Open `index.html` in a browser. No server or build tools required.
 ## Contact
 
 - Instagram: [@nardussy](https://instagram.com/nardussy)
-- Email: hello@nardussy.com

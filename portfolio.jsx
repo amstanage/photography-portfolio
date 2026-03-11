@@ -114,6 +114,11 @@ const PROJECTS = [
 
 const CATEGORIES = ["All", "Automotive", "Architecture"];
 
+function opt(src, size) {
+  const lastDot = src.lastIndexOf('.');
+  return 'optimized/' + src.substring(0, lastDot) + '-' + size + '.webp';
+}
+
 const ALL_IMAGES = (() => {
   const result = [];
   const maxLen = Math.max(...PROJECTS.map(p => p.images.length));
@@ -124,8 +129,6 @@ const ALL_IMAGES = (() => {
   }
   return result;
 })();
-
-PROJECTS.flatMap(p => p.images).forEach(src => { const img = new Image(); img.src = src; });
 
 // ─── Hooks ──────────────────────────────────────────────────────────────────
 function useInView(opts = {}) {
@@ -192,8 +195,8 @@ function Nav({ scrolled, currentSection, onNavigate }) {
 // ─── Hero ───────────────────────────────────────────────────────────────────
 function Hero() {
   const [loaded, setLoaded] = useState(false);
-  const [layerA, setLayerA] = useState(ALL_IMAGES[0]);
-  const [layerB, setLayerB] = useState(ALL_IMAGES[0]);
+  const [layerA, setLayerA] = useState(opt(ALL_IMAGES[0], '1600w'));
+  const [layerB, setLayerB] = useState(opt(ALL_IMAGES[0], '1600w'));
   const [aVisible, setAVisible] = useState(true);
   const counter = useRef(0);
   const aVisRef = useRef(true);
@@ -204,7 +207,7 @@ function Hero() {
     if (!loaded) return;
     const timer = setInterval(() => {
       counter.current = (counter.current + 1) % ALL_IMAGES.length;
-      const nextSrc = ALL_IMAGES[counter.current];
+      const nextSrc = opt(ALL_IMAGES[counter.current], '1600w');
       const img = new Image();
       img.src = nextSrc;
       img.onload = () => {
@@ -397,7 +400,11 @@ function HorizontalGallery({ images, active, inView, onImageClick }) {
             flex: "0 0 60%", minWidth: "60%",
             position: "relative", overflow: "hidden",
           }}>
-            <img src={src} alt="" loading="eager" decoding="async" draggable={false}
+            <img
+              src={opt(src, '1600w')}
+              srcSet={`${opt(src, '800w')} 800w, ${opt(src, '1600w')} 1600w, ${opt(src, '3200w')} 3200w`}
+              sizes="60vw"
+              alt="" loading="lazy" decoding="async" draggable={false}
               onClick={() => handleImageClick(src)}
               style={{
               width: "100%", height: "100%", objectFit: "cover", display: "block",
@@ -478,7 +485,7 @@ function ProjectSection({ project, index, onImageClick }) {
         position: "absolute", inset: 0, zIndex: 0,
         opacity: hovered ? 0 : 1, transition: "opacity 0.5s ease",
       }}>
-        <img src={project.images[0]} alt="" loading="lazy" decoding="async" style={{
+        <img src={opt(project.images[0], '800w')} alt="" loading="lazy" decoding="async" style={{
           width: "100%", height: "100%", objectFit: "cover", opacity: 0.45,
         }} />
       </div>
@@ -779,7 +786,7 @@ function Lightbox({ src, onClose }) {
           to { opacity: 1; }
         }
       `}</style>
-      <img src={src} alt="" style={{
+      <img src={opt(src, '3200w')} alt="" style={{
         maxWidth: "95vw", maxHeight: "95vh", objectFit: "contain",
       }} />
     </div>
